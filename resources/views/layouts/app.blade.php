@@ -28,18 +28,38 @@
             </button>
 
             <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-                <!-- Menú desplegable de Módulos del Sistema -->
+                <!-- Menú desplegable de Módulos del Sistema filtrado por Roles -->
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             📦 Módulos del Sistema
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ route('inventory.index') }}">🪑 Mobiliario (Aulas)</a></li>
-                            <li><a class="dropdown-item" href="{{ route('library.index') }}">📚 Biblioteca Escolar</a></li>
-                            <li><a class="dropdown-item" href="{{ route('tic.index') }}">💻 Equipos TIC & AIP</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('inventory.dashboard') }}">📊 Panel de Estadísticas</a></li>
+                            <!-- Mobiliario y Aulas (Admin: 1, Mobiliario: 3) -->
+                            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 3]))
+                                <li><a class="dropdown-item" href="{{ route('inventory.index') }}">🪑 Mobiliario (Aulas)</a></li>
+                            @endif
+
+                            <!-- Biblioteca Escolar (Admin: 1, Biblioteca: 2) -->
+                            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 2]))
+                                <li><a class="dropdown-item" href="{{ route('library.index') }}">📚 Biblioteca Escolar</a></li>
+                            @endif
+
+                            <!-- Equipos TIC (Admin: 1, TIC: 4) -->
+                            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 4]))
+                                <li><a class="dropdown-item" href="{{ route('tic.index') }}">💻 Equipos TIC</a></li>
+                            @endif
+
+                            <!-- Aula AIP (Admin: 1, AIP: 5) -->
+                            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 5]))
+                                <li><a class="dropdown-item" href="{{ route('tic.index') }}">🖥️ Aula AIP</a></li>
+                            @endif
+
+                            <!-- Panel de Estadísticas (Solo Administrador: 1) -->
+                            @if(auth()->check() && auth()->user()->rol_id == 1)
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('inventory.dashboard') }}">📊 Panel de Estadísticas</a></li>
+                            @endif
                         </ul>
                     </li>
                 </ul>

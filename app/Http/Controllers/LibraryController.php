@@ -4,13 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\LibraryItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LibraryController extends Controller
 {
     public function index()
     {
+        // Validar que el usuario tenga rol de Administrador (1) o Biblioteca (2)
+        $user = Auth::user();
+        if (!$user || ($user->rol_id != 1 && $user->rol_id != 2)) {
+            abort(403, 'No tienes autorización para acceder a este módulo.');
+        }
+
         $items = LibraryItem::latest()->get()->map(function ($item) {
-            // Traducir las columnas nuevas a las que la vista espera
             return (object) [
                 'id'              => $item->id,
                 'objeto'          => $item->title,
@@ -28,6 +34,11 @@ class LibraryController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if (!$user || ($user->rol_id != 1 && $user->rol_id != 2)) {
+            abort(403, 'No tienes autorización para realizar esta acción.');
+        }
+
         $validated = $request->validate([
             'objeto'          => 'required|string|max:255',
             'brand_model'     => 'nullable|string|max:255',
@@ -51,6 +62,11 @@ class LibraryController extends Controller
 
     public function destroy($id)
     {
+        $user = Auth::user();
+        if (!$user || ($user->rol_id != 1 && $user->rol_id != 2)) {
+            abort(403, 'No tienes autorización para realizar esta acción.');
+        }
+
         $item = LibraryItem::findOrFail($id);
         $item->delete();
 

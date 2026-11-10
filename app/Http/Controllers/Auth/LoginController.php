@@ -25,8 +25,8 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             
-            // Redirección al módulo principal de inventario de mobiliario
-            return redirect()->intended(route('inventory.index'));
+            // Redirección inteligente basada en el rol del usuario
+            return redirect()->intended(route('dashboard.redirect'));
         }
 
         // Si falla, devolvemos el error asociado al campo dni
