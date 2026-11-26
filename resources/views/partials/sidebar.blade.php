@@ -1,80 +1,186 @@
-<aside class="w-full md:w-72 bg-brand-dark dark:bg-slate-900 text-white flex flex-col justify-between p-6 shrink-0 shadow-xl border-r border-slate-800 z-40 sticky top-0 h-screen overflow-y-auto">
+@php
+    $currentUser = auth()->user();
+    $isAdmin = $currentUser && ((int) $currentUser->rol_id === 1 || in_array($currentUser->role, ['admin', 'directiva'], true));
+
+    $canLibrary = $currentUser && ($isAdmin || $currentUser->hasModulePermission('library'));
+    $canInventory = $currentUser && ($isAdmin || $currentUser->hasModulePermission('inventory'));
+    $canTic = $currentUser && ($isAdmin || $currentUser->hasModulePermission('tic'));
+    $canAip = $currentUser && ($isAdmin || $currentUser->hasModulePermission('aip'));
+    $canLaboratory = $currentUser && ($isAdmin || $currentUser->hasModulePermission('laboratory'));
+
+    $avatarUrl = ($currentUser && !empty($currentUser->avatar))
+        ? asset('storage/' . ltrim($currentUser->avatar, '/'))
+        : null;
+@endphp
+
+<aside class="w-full md:w-72 md:h-screen md:sticky md:top-0 md:overflow-y-auto bg-[#172B4D] dark:bg-slate-900 text-slate-200 flex-shrink-0 flex flex-col justify-start p-6 shadow-2xl border-r border-slate-800/80 transition-colors duration-300">
     <div>
-        <div class="flex items-center gap-3 mb-6 pb-6 border-b border-slate-800">
-            <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center p-2 shadow-md shrink-0 border border-slate-700">
-                <svg class="w-full h-full" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M50 5 L90 20 V55 C90 80 50 105 50 105 C50 105 10 80 10 55 V20 Z" fill="#0756A3" stroke="#F5C542" stroke-width="4"/>
-                    <path d="M50 8 L86 22 V53 C86 76 50 99 50 99 C50 99 14 76 14 53 V22 Z" stroke="white" stroke-width="3"/>
-                    <path d="M50 18 C53 25 57 28 50 36 C43 28 47 25 50 18 Z" fill="#F39C12"/>
-                    <path d="M50 23 C51.5 27 54 29 50 34 C46 29 48.5 27 50 23 Z" fill="#F5C542"/>
-                </svg>
+        {{-- Encabezado Institucional --}}
+        <div class="flex items-center gap-3.5 pb-6 border-b border-slate-700/60 mb-6">
+            <div class="w-12 h-12 bg-[#0b3c8c] rounded-2xl flex items-center justify-center overflow-hidden shadow-md border border-white/15 shrink-0">
+                <img
+                    src="{{ asset('images/escudo-tungasuca.png') }}"
+                    alt="Escudo I.E. Tungasuca"
+                    class="w-full h-full object-cover"
+                >
             </div>
-            <div>
-                <h2 class="font-black text-xs tracking-wide">I.E. TUNGASUCA</h2>
-                <p class="text-[10px] text-brand-sky font-semibold tracking-wider uppercase">Gestión Institucional</p>
+            <div class="overflow-hidden">
+                <p class="text-sm font-extrabold text-white tracking-tight truncate">I.E. TUNGASUCA</p>
+                <p class="text-[10px] font-bold text-brand-sky uppercase tracking-widest truncate">Gestión Institucional</p>
             </div>
         </div>
 
-        <div class="bg-slate-800/60 dark:bg-slate-800/40 p-4 rounded-2xl mb-8 border border-slate-700/50 flex items-center gap-3">
-            <div class="w-10 h-10 bg-brand-blue rounded-full flex items-center justify-center font-bold text-white shadow shrink-0">
-                {{ auth()->check() ? substr(auth()->user()->name, 0, 1) : 'U' }}
-            </div>
-            <div class="overflow-hidden">
+        {{-- Tarjeta de Usuario (clic para ir a Mi Perfil) --}}
+        <a
+            href="{{ route('my-profile.edit') }}"
+            title="Editar mi nombre y foto de perfil"
+            class="bg-slate-800/60 hover:bg-slate-800 dark:bg-slate-800/50 dark:hover:bg-slate-800 p-4 rounded-2xl mb-8 border border-slate-700/50 flex items-center gap-3 transition group"
+        >
+            @if($avatarUrl)
+                <img
+                    src="{{ $avatarUrl }}"
+                    alt="Foto de {{ $currentUser->name }}"
+                    class="w-11 h-11 rounded-full object-cover shadow shrink-0 border-2 border-brand-sky/40"
+                >
+            @else
+                <div class="w-11 h-11 bg-brand-blue rounded-full flex items-center justify-center font-extrabold text-white shadow shrink-0">
+                    {{ $currentUser ? mb_strtoupper(mb_substr($currentUser->name, 0, 1)) : 'U' }}
+                </div>
+            @endif
+
+            <div class="overflow-hidden min-w-0 flex-1">
                 <p class="text-[10px] text-slate-400">Bienvenido,</p>
-                <p class="text-xs font-bold truncate text-white">{{ auth()->check() ? auth()->user()->name : 'Invitado' }}</p>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <p class="text-xs font-bold truncate text-white group-hover:text-brand-sky transition">
+                    {{ $currentUser ? $currentUser->name : 'Invitado' }}
+                </p>
+                <p class="text-[10px] text-brand-sky font-semibold truncate">
+                    {{ $currentUser ? $currentUser->getRoleLabel() : '' }}
+                </p>
+                <div class="flex items-center gap-1.5 mt-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
                     <span class="text-[10px] text-emerald-400 font-medium">En línea</span>
                 </div>
             </div>
-        </div>
+        </a>
 
-        <div class="space-y-1.5">
-            <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 px-2">Módulos del Sistema</p>
+        {{-- Navegación de Módulos --}}
+        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-3 mb-3">
+            Módulos del Sistema
+        </p>
 
-            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 3]))
-                <a href="{{ route('inventory.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>🪑</span> Mobiliario (Aulas)
+        <nav class="space-y-1.5">
+            @if($isAdmin)
+                <a
+                    href="{{ route('inventory.dashboard') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('inventory.dashboard') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                >
+                    <span class="text-base">📊</span>
+                    <span class="truncate">Panel General</span>
                 </a>
             @endif
 
-            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 2]))
-                <a href="{{ route('library.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>📚</span> Biblioteca Escolar
+            @if($canInventory)
+                <a
+                    href="{{ route('inventory.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('inventory.index') || request()->routeIs('inventory.edit') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                >
+                    <span class="text-base">🪑</span>
+                    <span class="truncate">Mobiliario (Aulas)</span>
                 </a>
             @endif
 
-            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 4]))
-                <a href="{{ route('tic.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>💻</span> Equipos TIC
+            @if($canLibrary)
+                <a
+                    href="{{ route('library.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('library.*') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                >
+                    <span class="text-base">📚</span>
+                    <span class="truncate">Biblioteca Escolar</span>
                 </a>
             @endif
 
-            @if(auth()->check() && in_array(auth()->user()->rol_id, [1, 5]))
-                <a href="{{ route('tic.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>🖥️</span> Aula AIP
+            @if($canTic)
+                <a
+                    href="{{ route('tic.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('tic.*') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                >
+                    <span class="text-base">💻</span>
+                    <span class="truncate">Equipos TIC</span>
                 </a>
             @endif
 
-            @if(auth()->check() && auth()->user()->rol_id == 1)
-                <a href="{{ route('inventory.dashboard') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-brand-blue text-white shadow-md shadow-brand-blue/20 transition-all">
-                    <span>📊</span> Dashboard Estadísticas
+            @if($canAip)
+                <a
+                    href="{{ route('aip.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('aip.*') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                >
+                    <span class="text-base">🖥️</span>
+                    <span class="truncate">Aula AIP</span>
                 </a>
             @endif
-        </div>
-    </div>
 
-    <div class="pt-6 border-t border-slate-800 space-y-3 mt-6">
-        <button type="button" onclick="toggleDarkMode()" class="hover-shine w-full bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl font-bold flex items-center justify-between text-xs transition cursor-pointer border border-slate-700">
-            <span class="flex items-center gap-2">☀️ Modo Visual</span>
-            <span class="text-[10px] bg-slate-700 px-2.5 py-1 rounded text-brand-sky font-mono uppercase" id="themeTextLabel">Claro</span>
-        </button>
+            @if($canLaboratory)
+                <a
+                    href="{{ route('laboratory.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('laboratory.*') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                >
+                    <span class="text-base">🔬</span>
+                    <span class="truncate">Laboratorio</span>
+                </a>
+            @endif
 
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="hover-shine w-full bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 text-xs transition cursor-pointer border border-rose-500/20">
-                <span>🚪</span> Cerrar Sesión
+            @if($isAdmin)
+                <div class="pt-3 mt-3 border-t border-slate-800">
+                    <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest px-3 mb-2">
+                        Administración
+                    </p>
+                    <a
+                        href="{{ route('profiles.index') }}"
+                        class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('profiles.*') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                    >
+                        <span class="text-base">🛡️</span>
+                        <span class="truncate">Gestión de Perfiles</span>
+                    </a>
+                </div>
+            @endif
+
+            <div class="pt-2">
+                <a
+                    href="{{ route('my-profile.edit') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition {{ request()->routeIs('my-profile.*') ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/30' : 'text-slate-300 hover:bg-slate-800/80 hover:text-white' }}"
+                >
+                    <span class="text-base">👤</span>
+                    <span class="truncate">Mi Perfil</span>
+                </a>
+            </div>
+        </nav>
+
+        {{-- Modo Visual y Cerrar Sesión pegados justo debajo de la navegación --}}
+        <div class="pt-4 mt-4 border-t border-slate-700/60 space-y-2.5">
+            <button
+                type="button"
+                onclick="toggleDarkMode()"
+                class="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-800/80 hover:bg-slate-800 text-xs font-bold text-slate-200 border border-slate-700/60 transition cursor-pointer"
+            >
+                <span class="flex items-center gap-2">
+                    <span>☀️</span>
+                    <span>Modo Visual</span>
+                </span>
+                <span id="themeTextLabel" class="px-2.5 py-0.5 rounded-lg bg-slate-900 text-[10px] font-extrabold uppercase tracking-wider text-brand-sky">
+                    Claro
+                </span>
             </button>
-        </form>
+
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button
+                    type="submit"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-rose-950/60 hover:bg-rose-600 text-rose-200 hover:text-white border border-rose-800/60 text-xs font-bold transition cursor-pointer"
+                >
+                    <span>🚪</span>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </form>
+        </div>
     </div>
 </aside>

@@ -1,10 +1,10 @@
-<header class="mb-8 p-6 md:p-8 rounded-3xl bg-brand-blue dark:bg-slate-900 text-white shadow-xl shadow-brand-blue/15 flex flex-col md:flex-row justify-between items-center gap-6 relative z-30 transition-colors duration-300 border border-slate-800">
+<header class="mb-8 p-6 md:p-8 rounded-3xl bg-brand-blue dark:bg-slate-900 text-white shadow-xl shadow-brand-blue/15 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 relative z-30 transition-colors duration-300 border border-slate-800 min-w-0">
     <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
         <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-brand-sky/20 rounded-full blur-3xl"></div>
         <div class="absolute right-1/3 -top-12 w-48 h-48 bg-brand-yellow/20 rounded-full blur-2xl"></div>
     </div>
     
-    <div class="z-10 flex items-center gap-5">
+    <div class="z-10 flex items-center gap-5 min-w-0">
         <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="px-3 py-0.5 rounded-full text-[11px] font-extrabold bg-brand-yellow text-brand-dark uppercase tracking-widest shadow-sm">I.E. Tungasuca</span>
@@ -14,36 +14,21 @@
         </div>
     </div>
 
-    <div class="flex flex-wrap items-center gap-3 z-30 relative w-full md:w-auto justify-end">
-        <form method="GET" action="{{ route('inventory.dashboard') }}" id="formAulaFilter" class="relative w-full sm:w-auto z-50">
-            <input type="hidden" name="classroom_id" id="inputClassroomId" value="{{ request('classroom_id') }}">
+    <div class="flex flex-wrap items-center gap-2.5 z-30 relative w-full lg:w-auto justify-start lg:justify-end">
+        <select id="headerFiltroGrado" onchange="sincronizarFiltroHeader('grado')" aria-label="Seleccionar grado"
+            class="px-3.5 py-2.5 bg-white dark:bg-slate-800 text-brand-dark dark:text-slate-100 border border-white/30 dark:border-slate-700 rounded-2xl text-sm font-semibold focus:outline-none transition shadow-md cursor-pointer">
+            <option value="">🌐 Todo el Colegio (1°–5°)</option>
+            <option value="1">1° Grado</option>
+            <option value="2">2° Grado</option>
+            <option value="3">3° Grado</option>
+            <option value="4">4° Grado</option>
+            <option value="5">5° Grado</option>
+        </select>
 
-            <button type="button" onclick="toggleAulaDropdown()" id="btnAulaDropdown" class="w-full sm:w-auto px-4 py-2.5 bg-white dark:bg-slate-800 text-brand-dark dark:text-slate-100 border border-white/30 dark:border-slate-700 rounded-2xl text-sm font-semibold focus:outline-none transition flex items-center justify-between gap-3 shadow-md cursor-pointer">
-                <div class="flex items-center gap-2 overflow-hidden">
-                    <span id="selectedAulaLabel" class="truncate">
-                        @if(request('classroom_id'))
-                            Aula: {{ (($classroomsList ?? collect())->firstWhere('id', request('classroom_id')))?->name ?? 'Seleccionada' }}
-                        @else
-                            Vista General (Todo el Colegio)
-                        @endif
-                    </span>
-                </div>
-                <span class="text-brand-blue dark:text-brand-sky text-xs transition-transform duration-200" id="arrowAulaDropdown">▼</span>
-            </button>
-
-            <div id="menuAulaDropdown" class="hidden absolute right-0 w-full sm:w-72 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden py-1 text-slate-800 dark:text-slate-100">
-                <button type="button" onclick="selectAula('')" class="w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-brand-blue/10 dark:hover:bg-slate-800 flex items-center gap-2.5 transition cursor-pointer">
-                    <span class="font-bold truncate">🌐 Vista General (Todo el Colegio)</span>
-                </button>
-                <div class="border-t border-slate-100 dark:border-slate-800 my-1"></div>
-                @foreach(($classroomsList ?? collect()) as $room)
-                    <button type="button" onclick="selectAula('{{ $room->id }}')" class="w-full px-4 py-2.5 text-left text-sm font-medium hover:bg-brand-blue/10 dark:hover:bg-slate-800 flex items-center gap-2.5 transition cursor-pointer">
-                        <span class="text-base">🏫</span>
-                        <span class="truncate">Aula: {{ $room->name }}</span>
-                    </button>
-                @endforeach
-            </div>
-        </form>
+        <select id="headerFiltroSeccion" onchange="sincronizarFiltroHeader('seccion')" aria-label="Seleccionar sección"
+            class="px-3.5 py-2.5 bg-white dark:bg-slate-800 text-brand-dark dark:text-slate-100 border border-white/30 dark:border-slate-700 rounded-2xl text-sm font-semibold focus:outline-none transition shadow-md cursor-pointer">
+            <option value="">Todas las secciones</option>
+        </select>
 
         <a href="{{ route('inventory.index') }}" class="bg-brand-hover hover:bg-white hover:text-brand-blue dark:bg-slate-700 dark:hover:bg-slate-600 dark:hover:text-white text-white border border-white/20 px-5 py-2.5 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-md text-sm whitespace-nowrap">
             <span>⬅️</span>

@@ -49,65 +49,35 @@
 </head>
 <body class="bg-[#F3F6F9] dark:bg-slate-950 text-brand-dark dark:text-slate-100 min-h-screen flex flex-col md:flex-row transition-colors duration-300 overflow-x-hidden">
 
-    <!-- SIDEBAR -->
-    <aside class="w-full md:w-72 bg-brand-dark dark:bg-slate-900 text-white flex flex-col justify-between p-6 shrink-0 shadow-xl border-r border-slate-800 z-40 sticky top-0 h-screen overflow-y-auto">
-        <div>
-            <div class="flex items-center gap-3 mb-6 pb-6 border-b border-slate-800">
-                <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center p-2 shadow-md shrink-0 border border-slate-700">
-                    <svg class="w-full h-full" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50 5 L90 20 V55 C90 80 50 105 50 105 C50 105 10 80 10 55 V20 Z" fill="#0756A3" stroke="#F5C542" stroke-width="4"/>
-                        <path d="M50 8 L86 22 V53 C86 76 50 99 50 99 C50 99 14 76 14 53 V22 Z" stroke="white" stroke-width="3"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="font-black text-xs tracking-wide">I.E. TUNGASUCA</h2>
-                    <p class="text-[10px] text-brand-sky font-semibold tracking-wider uppercase">Gestión Institucional</p>
-                </div>
-            </div>
+    <!-- PRELOADER INSTITUCIONAL -->
+    <div id="preloader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#F3F6F9] dark:bg-slate-950 transition-opacity duration-500">
+        <div class="absolute w-96 h-96 bg-sky-200/50 dark:bg-sky-900/30 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
+        <div class="absolute w-64 h-64 bg-blue-300/30 dark:bg-blue-800/20 rounded-full blur-2xl animate-pulse delay-300 pointer-events-none"></div>
 
-            <div class="bg-slate-800/60 dark:bg-slate-800/40 p-4 rounded-2xl mb-8 border border-slate-700/50 flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-blue rounded-full flex items-center justify-center font-bold text-white shadow shrink-0">
-                    {{ auth()->check() ? substr(auth()->user()->name, 0, 1) : 'U' }}
-                </div>
-                <div class="overflow-hidden">
-                    <p class="text-[10px] text-slate-400">Bienvenido,</p>
-                    <p class="text-xs font-bold truncate text-white">{{ auth()->check() ? auth()->user()->name : 'Invitado' }}</p>
-                </div>
-            </div>
-
-            <div class="space-y-1.5">
-                <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 px-2">Módulos del Sistema</p>
-                <a href="{{ route('inventory.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>🪑</span> Mobiliario (Aulas)
-                </a>
-                <a href="{{ route('library.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>📚</span> Biblioteca Escolar
-                </a>
-                <a href="{{ route('tic.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>💻</span> Equipos TIC & AIP
-                </a>
-                <a href="{{ route('inventory.dashboard') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-brand-blue text-white shadow-md shadow-brand-blue/20 transition-all">
-                    <span>📊</span> Dashboard Estadísticas
-                </a>
-                <a href="{{ route('inventory.objetos') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>📋</span> Listado de Objetos
-                </a>
-            </div>
+        <div class="relative w-32 h-32 flex items-center justify-center mb-8">
+            <div class="w-32 h-32 border-4 border-sky-200 dark:border-sky-800 border-t-sky-600 dark:border-t-sky-400 rounded-full animate-spin"></div>
+            <div class="absolute w-24 h-24 border-4 border-blue-100 dark:border-blue-900 border-b-blue-600 dark:border-b-blue-400 rounded-full animate-spin [animation-duration:1.2s]"></div>
+            <img
+                src="{{ asset('images/escudo-tungasuca.png') }}"
+                alt="Escudo I.E. Tungasuca"
+                class="absolute w-16 h-16 rounded-2xl object-cover shadow-lg border-2 border-white dark:border-slate-800 bg-[#0b3c8c] z-10"
+            >
         </div>
 
-        <div class="pt-6 border-t border-slate-800 space-y-3 mt-6">
-            <button type="button" onclick="toggleDarkMode()" class="hover-shine w-full bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl font-bold flex items-center justify-between text-xs transition cursor-pointer border border-slate-700">
-                <span class="flex items-center gap-2">☀️ Modo Visual</span>
-                <span class="text-[10px] bg-slate-700 px-2.5 py-1 rounded text-brand-sky font-mono uppercase" id="themeTextLabel">Claro</span>
-            </button>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="hover-shine w-full bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 text-xs transition cursor-pointer border border-rose-500/20">
-                    <span>🚪</span> Cerrar Sesión
-                </button>
-            </form>
+        <div class="text-center space-y-2 z-10 px-4">
+            <span class="px-3.5 py-1 rounded-full text-[11px] font-extrabold tracking-widest bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800 uppercase shadow-sm">
+                Catálogo Institucional
+            </span>
+            <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-wide uppercase mt-2">I.E. TUNGASUCA</h2>
+            <p class="text-sky-700 dark:text-sky-400 text-xs font-semibold tracking-wide flex items-center justify-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
+                Cargando listado de objetos...
+            </p>
         </div>
-    </aside>
+    </div>
+
+    <!-- SIDEBAR PARCIAL -->
+    @include('partials.sidebar')
 
     <!-- CONTENIDO -->
     <div class="flex-grow p-6 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
@@ -119,13 +89,20 @@
                 <div class="absolute right-1/3 -top-12 w-48 h-48 bg-brand-yellow/20 rounded-full blur-2xl"></div>
             </div>
 
-            <div class="z-10">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="px-3 py-0.5 rounded-full text-[11px] font-extrabold bg-brand-yellow text-brand-dark uppercase tracking-widest shadow-sm">I.E. Tungasuca</span>
-                    <span class="text-xs text-brand-sky font-semibold tracking-wide">Catálogo completo</span>
+            <div class="z-10 flex items-center gap-5">
+                <img
+                    src="{{ asset('images/escudo-tungasuca.png') }}"
+                    alt="Escudo I.E. Tungasuca"
+                    class="w-16 h-16 rounded-2xl object-cover shadow-lg border border-white/25 bg-[#0b3c8c] shrink-0"
+                >
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3 py-0.5 rounded-full text-[11px] font-extrabold bg-brand-yellow text-brand-dark uppercase tracking-widest shadow-sm">I.E. Tungasuca</span>
+                        <span class="text-xs text-brand-sky font-semibold tracking-wide">Catálogo completo</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Listado Completo de Objetos</h1>
+                    <p class="text-sm text-brand-sky mt-1">{{ $objetos->count() }} tipos diferentes de objetos registrados</p>
                 </div>
-                <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Listado Completo de Objetos</h1>
-                <p class="text-sm text-brand-sky mt-1">{{ $objetos->count() }} tipos diferentes de objetos registrados</p>
             </div>
 
             <div class="flex flex-wrap items-center gap-3 z-30 relative">
@@ -238,6 +215,14 @@
     </div>
 
     <script>
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.classList.add('opacity-0');
+                setTimeout(() => preloader.remove(), 500);
+            }
+        });
+
         document.addEventListener("DOMContentLoaded", () => {
             const currentTheme = localStorage.getItem('theme') || 'light';
             const label = document.getElementById('themeTextLabel');
@@ -247,13 +232,15 @@
         function toggleDarkMode() {
             const html = document.documentElement;
             const isDark = html.classList.contains('dark');
+            const label = document.getElementById('themeTextLabel');
+
             if (isDark) {
                 html.classList.remove('dark');
-                document.getElementById('themeTextLabel').innerText = 'Claro';
+                if (label) label.innerText = 'Claro';
                 localStorage.setItem('theme', 'light');
             } else {
                 html.classList.add('dark');
-                document.getElementById('themeTextLabel').innerText = 'Oscuro';
+                if (label) label.innerText = 'Oscuro';
                 localStorage.setItem('theme', 'dark');
             }
         }

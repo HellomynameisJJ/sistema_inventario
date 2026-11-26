@@ -27,9 +27,11 @@
                     colors: {
                         brand: {
                             blue: '#0756A3',
+                            main: '#0756A3',
                             hover: '#064681',
                             secondary: '#1689D4',
                             sky: '#48B9E8',
+                            celeste: '#48B9E8',
                             yellow: '#F5C542',
                             dark: '#172B4D',
                             bg: '#F3F6F9',
@@ -78,109 +80,42 @@
         }
     </style>
 </head>
-<body class="bg-[#F3F6F9] dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col md:flex-row selection:bg-sky-500 selection:text-white transition-colors duration-300 overflow-x-hidden">
+<body class="bg-[#F3F6F9] dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen md:h-screen md:overflow-hidden flex flex-col md:flex-row selection:bg-sky-500 selection:text-white transition-colors duration-300 overflow-x-hidden">
 
     <!-- PANTALLA DE CARGA INSTITUCIONAL -->
-    <div id="preloader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-950 transition-opacity duration-500">
-        <div class="absolute w-96 h-96 bg-sky-500/10 dark:bg-sky-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute w-64 h-64 bg-cyan-500/10 rounded-full blur-2xl animate-pulse delay-300"></div>
+    <div id="preloader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#F3F6F9] dark:bg-slate-950 transition-opacity duration-500">
+        <div class="absolute w-96 h-96 bg-sky-500/10 dark:bg-sky-600/20 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
+        <div class="absolute w-64 h-64 bg-amber-400/15 dark:bg-cyan-500/10 rounded-full blur-2xl animate-pulse delay-300 pointer-events-none"></div>
 
-        <div class="relative flex items-center justify-center mb-8">
-            <div class="w-28 h-28 border-4 border-sky-500/20 border-t-sky-600 dark:border-sky-400/20 dark:border-t-sky-400 rounded-full animate-spin"></div>
-            <div class="absolute w-20 h-20 border-4 border-cyan-500/20 border-b-cyan-500 dark:border-cyan-400/20 dark:border-b-cyan-400 rounded-full animate-spin [animation-duration:1.5s]"></div>
-            <div class="absolute text-4xl transform hover:scale-110 transition">💻</div>
+        <div class="relative w-32 h-32 flex items-center justify-center mb-8">
+            <div class="w-32 h-32 border-4 border-sky-500/20 border-t-sky-600 dark:border-sky-400/20 dark:border-t-sky-400 rounded-full animate-spin"></div>
+            <div class="absolute w-24 h-24 border-4 border-amber-400/30 border-b-amber-500 dark:border-cyan-400/20 dark:border-b-cyan-400 rounded-full animate-spin [animation-duration:1.5s]"></div>
+            <img
+                src="{{ asset('images/escudo-tungasuca.png') }}"
+                alt="Escudo I.E. Tungasuca"
+                class="absolute w-16 h-16 rounded-2xl object-cover shadow-lg border-2 border-white dark:border-slate-800 bg-[#0b3c8c] z-10"
+            >
         </div>
         
-        <div class="text-center space-y-2 z-10">
+        <div class="text-center space-y-2 z-10 px-4">
             <span class="px-3 py-1 rounded-full text-[10px] font-extrabold tracking-widest bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30 uppercase">
                 Tecnología & Aulas TIC
             </span>
             <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-wider uppercase mt-2">I.E. TUNGASUCA</h2>
             <p class="text-sky-600 dark:text-sky-300 text-xs font-medium tracking-wide flex items-center justify-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-sky-500 dark:bg-sky-400 animate-ping"></span>
-                Cargando inventario tecnológico y AIP...
+                Cargando inventario general de aulas TIC...
             </p>
         </div>
     </div>
 
     <!-- SIDEBAR / MENÚ LATERAL IZQUIERDO -->
-    <aside class="w-full md:w-72 bg-brand-dark dark:bg-slate-900 text-white flex flex-col justify-between p-6 shrink-0 shadow-xl border-r border-slate-800 z-40 sticky top-0 h-screen overflow-y-auto">
-        <div>
-            <!-- LOGO / CABECERA SIDEBAR -->
-            <div class="flex items-center gap-3 mb-6 pb-6 border-b border-slate-800">
-                <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center p-2 shadow-md shrink-0 border border-slate-700">
-                    <svg class="w-full h-full" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50 5 L90 20 V55 C90 80 50 105 50 105 C50 105 10 80 10 55 V20 Z" fill="#0756A3" stroke="#F5C542" stroke-width="4"/>
-                        <path d="M50 8 L86 22 V53 C86 76 50 99 50 99 C50 99 14 76 14 53 V22 Z" stroke="white" stroke-width="3"/>
-                        <path d="M50 18 C53 25 57 28 50 36 C43 28 47 25 50 18 Z" fill="#F39C12"/>
-                        <path d="M50 23 C51.5 27 54 29 50 34 C46 29 48.5 27 50 23 Z" fill="#F5C542"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="font-black text-xs tracking-wide">I.E. TUNGASUCA</h2>
-                    <p class="text-[10px] text-brand-sky font-semibold tracking-wider uppercase">Gestión Institucional</p>
-                </div>
-            </div>
+    @include('partials.sidebar')
 
-            <!-- PERFIL DE USUARIO LOGUEADO -->
-            <div class="bg-slate-800/60 dark:bg-slate-800/40 p-4 rounded-2xl mb-8 border border-slate-700/50 flex items-center gap-3">
-                <div class="w-10 h-10 bg-brand-blue rounded-full flex items-center justify-center font-bold text-white shadow shrink-0">
-                    {{ auth()->check() ? substr(auth()->user()->name, 0, 1) : 'U' }}
-                </div>
-                <div class="overflow-hidden">
-                    <p class="text-[10px] text-slate-400">Bienvenido,</p>
-                    <p class="text-xs font-bold truncate text-white">{{ auth()->check() ? auth()->user()->name : 'Invitado' }}</p>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-[10px] text-emerald-400 font-medium">En línea</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MÓDULOS DEL SISTEMA -->
-            <div class="space-y-1.5">
-                <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-3 px-2">Módulos del Sistema</p>
-
-                <a href="{{ route('inventory.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>🪑</span> Mobiliario (Aulas)
-                </a>
-
-                <a href="{{ route('library.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>📚</span> Biblioteca Escolar
-                </a>
-
-                <a href="{{ route('tic.index') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-brand-blue text-white shadow-md shadow-brand-blue/20 transition-all">
-                    <span>💻</span> Equipos TIC & AIP
-                </a>
-
-                <a href="{{ route('inventory.dashboard') }}" class="hover-shine flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-all">
-                    <span>📊</span> Dashboard Estadísticas
-                </a>
-            </div>
-        </div>
-
-        <!-- ACCIONES INFERIORES -->
-        <div class="pt-6 border-t border-slate-800 space-y-3 mt-6">
-            <!-- Botón Cambio de Tema Local -->
-            <button type="button" onclick="toggleDarkMode()" class="hover-shine w-full bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl font-bold flex items-center justify-between text-xs transition cursor-pointer border border-slate-700">
-                <span class="flex items-center gap-2">☀️ Modo Visual</span>
-                <span class="text-[10px] bg-slate-700 px-2.5 py-1 rounded text-brand-sky font-mono uppercase" id="themeTextLabel">Claro</span>
-            </button>
-
-            <!-- Botón Cerrar Sesión -->
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="hover-shine w-full bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white px-4 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 text-xs transition cursor-pointer border border-rose-500/20">
-                    <span>🚪</span> Cerrar Sesión
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- CONTENEDOR PRINCIPAL A LA DERECHA -->
-    <div class="flex-grow p-6 md:p-10 overflow-y-auto max-w-7xl mx-auto w-full flex flex-col justify-between">
+    <!-- CONTENEDOR PRINCIPAL CON SCROLL INTERNO -->
+    <div class="flex-grow min-w-0 p-6 md:p-10 overflow-y-auto h-full w-full flex flex-col justify-between">
         
-        <div class="w-full">
+        <div class="max-w-7xl mx-auto w-full min-w-0">
             <!-- HEADER INSTITUCIONAL -->
             <header class="mb-8 p-6 md:p-8 rounded-3xl bg-gradient-to-r from-sky-900 via-sky-800 to-sky-950 dark:from-slate-900 dark:via-sky-950 dark:to-slate-900 border border-sky-800/30 dark:border-slate-800 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6 relative z-30 transition-colors duration-300">
                 
@@ -196,9 +131,9 @@
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="px-3 py-0.5 rounded-full text-[11px] font-black bg-amber-400 text-slate-950 uppercase tracking-widest shadow-sm">I.E. Tungasuca</span>
-                            <span class="text-xs text-sky-200 dark:text-sky-300 font-semibold tracking-wide">Secundaria & AIP</span>
+                            <span class="text-xs text-sky-200 dark:text-sky-300 font-semibold tracking-wide">Inglés • Matemáticas • C.C.S.S. • EPT • Comunicación</span>
                         </div>
-                        <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Aulas TIC y Tecnología EdTech</h1>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Equipos TIC de Aulas</h1>
                     </div>
                 </div>
             </header>
@@ -214,7 +149,19 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- ERRORES DE VALIDACIÓN -->
+            @if($errors->any())
+                <div class="bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-500/50 text-rose-800 dark:text-rose-300 px-5 py-4 rounded-2xl mb-6 shadow-xl">
+                    <div class="font-bold text-sm mb-1">⚠️ Revisa los datos ingresados:</div>
+                    <ul class="list-disc pl-6 text-xs space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 min-w-0">
                 
                 <!-- FORMULARIO DE REGISTRO TIC -->
                 <div class="bg-white dark:bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl backdrop-blur-md lg:col-span-1 self-start transition-colors duration-300">
@@ -223,23 +170,18 @@
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white tracking-wide">Registrar Equipo TIC</h2>
                     </div>
 
-                    <form action="{{ route('tic.store') }}" method="POST" class="space-y-4">
+                    <form id="formTic" action="{{ route('tic.store') }}" method="POST" class="space-y-4">
                         @csrf
                         
                         <div>
-                            <label for="location" class="block text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Aula TIC / Asignación</label>
+                            <label for="location" class="block text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Aula TIC</label>
                             <div class="relative">
                                 <select id="location" name="location" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-800 dark:text-white text-sm focus:outline-none focus:border-sky-500 transition appearance-none cursor-pointer">
                                     <option value="Aula TIC - Inglés">🇬🇧 Aula TIC - Inglés</option>
-                                    <option value="Aula TIC - Matemática">📐 Aula TIC - Matemática</option>
+                                    <option value="Aula TIC - Matemáticas">📐 Aula TIC - Matemáticas</option>
+                                    <option value="Aula TIC - C.C.S.S.">🌍 Aula TIC - C.C.S.S.</option>
+                                    <option value="Aula TIC - EPT">💻 Aula TIC - EPT</option>
                                     <option value="Aula TIC - Comunicación">📖 Aula TIC - Comunicación</option>
-                                    <option value="Aula TIC - EPT">💻 Aula TIC - EPT / Cómputo</option>
-                                    <option value="Aula TIC - CCSS">🌍 Aula TIC - CCSS</option>
-                                    <option value="Aula TIC - CTA">🔬 Aula TIC - C.T.A. / Ciencias</option>
-                                    <option value="Aula TIC - DPCC">⚖️ Aula TIC - DPCC</option>
-                                    <option value="Aula TIC - Arte y Cultura">🎨 Aula TIC - Arte y Cultura</option>
-                                    <option value="AIP General / Carrito CRT">🖥️ AIP General / Carrito CRT</option>
-                                    <option value="Dirección / Subdirección">🏢 Dirección / Servidor</option>
                                 </select>
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
                             </div>
@@ -248,19 +190,39 @@
                         <div>
                             <label for="objeto" class="block text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Tipo de Dispositivo</label>
                             <div class="relative">
-                                <select id="objeto" name="objeto" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-800 dark:text-white text-sm focus:outline-none focus:border-sky-500 transition appearance-none cursor-pointer">
+                                <select id="objeto" name="objeto" onchange="toggleOtroEquipoTic()" required class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-800 dark:text-white text-sm focus:outline-none focus:border-sky-500 transition appearance-none cursor-pointer">
                                     <option value="Laptop Docente / Estudiante">💻 Laptop Docente / Estudiante</option>
                                     <option value="PC de Escritorio / Monitor">🖥️ PC de Escritorio / Monitor</option>
                                     <option value="Proyector Multimedia">📹 Proyector Multimedia</option>
                                     <option value="Ecran / Pantalla Proyección">📺 Ecran / Pantalla Proyección</option>
                                     <option value="Audífonos / Headsets">🎧 Audífonos / Headsets</option>
-                                    <option value="Kit Robótica / Pizarra Digital">🤖 Kit Robótica / Pizarra Digital</option>
                                     <option value="Sistema de Audio / Parlantes">🔊 Sistema de Audio / Parlantes</option>
                                     <option value="Impresora / Escáner">🖨️ Impresora / Escáner</option>
-                                    <option value="Carrito Móvil de Carga">🛒 Carrito Móvil de Carga</option>
                                     <option value="Otro Equipo TIC">🔌 Otro Equipo TIC</option>
                                 </select>
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</div>
+                            </div>
+                        </div>
+
+                        <!-- APARTADO ESPECIAL PARA "OTRO EQUIPO TIC" -->
+                        <div id="apartadoOtroEquipoTic" class="hidden p-4 rounded-2xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/60 space-y-3">
+                            <div class="text-[11px] font-extrabold uppercase tracking-wider text-sky-700 dark:text-sky-300">
+                                🔌 Detalle de Otro Equipo TIC
+                            </div>
+
+                            <div>
+                                <label for="otro_nombre_equipo" class="block text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider mb-1.5">Nombre del equipo</label>
+                                <input type="text" id="otro_nombre_equipo" placeholder="Ej: Cámara Web HD, Estabilizador, Tablet" class="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white text-sm focus:outline-none focus:border-sky-500 transition placeholder-slate-400">
+                            </div>
+
+                            <div>
+                                <label for="otro_especificaciones" class="block text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider mb-1.5">Especificaciones</label>
+                                <input type="text" id="otro_especificaciones" placeholder="Ej: 1080p USB 2.0, 1200VA, 6 tomas" class="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white text-sm focus:outline-none focus:border-sky-500 transition placeholder-slate-400">
+                            </div>
+
+                            <div>
+                                <label for="otro_descripcion" class="block text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider mb-1.5">Descripción</label>
+                                <textarea id="otro_descripcion" rows="2" placeholder="Describe el uso o estado del equipo..." class="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-sky-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-white text-sm focus:outline-none focus:border-sky-500 transition placeholder-slate-400"></textarea>
                             </div>
                         </div>
 
@@ -292,7 +254,7 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div id="campoEspecificacionesGenerales">
                             <label for="details" class="block text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Especificaciones Técnicas</label>
                             <textarea id="details" name="details" rows="2" placeholder="Ej: Intel Core i5, 8GB RAM, SSD 256GB" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-800 dark:text-white text-sm focus:outline-none focus:border-sky-500 transition placeholder-slate-400"></textarea>
                         </div>
@@ -304,18 +266,56 @@
                 </div>
 
                 <!-- TABLA DE EQUIPOS TIC E INVENTARIO -->
-                <div class="bg-white dark:bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl backdrop-blur-md lg:col-span-2 transition-colors duration-300">
+                <div class="bg-white dark:bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl backdrop-blur-md lg:col-span-2 min-w-0 transition-colors duration-300">
                     
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div>
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white tracking-wide">Inventario Tecnológico</h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">I.E. Tungasuca • Gestión de Activos Digitales</p>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-white tracking-wide">Inventario General de Aulas TIC</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">I.E. Tungasuca • Inglés, Matemáticas, C.C.S.S., EPT y Comunicación</p>
                         </div>
                         
                         <div class="relative w-full sm:w-72">
                             <input type="text" id="buscador" placeholder="Buscar por aula, marca, serie..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-sky-500 transition">
                             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
                         </div>
+                    </div>
+
+                    <!-- FILTRO RÁPIDO POR AULA TIC -->
+                    <div class="flex flex-wrap items-center gap-2 mb-4" id="aulaFilterGroup">
+                        <button type="button" data-aula="" class="aula-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-600 text-white shadow-sm transition cursor-pointer">
+                            Todas las Aulas
+                        </button>
+                        <button type="button" data-aula="inglés" class="aula-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                            🇬🇧 Inglés
+                        </button>
+                        <button type="button" data-aula="matemática" class="aula-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                            📐 Matemáticas
+                        </button>
+                        <button type="button" data-aula="c.c.s.s." class="aula-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                            🌍 C.C.S.S.
+                        </button>
+                        <button type="button" data-aula="ept" class="aula-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                            💻 EPT
+                        </button>
+                        <button type="button" data-aula="comunicación" class="aula-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                            📖 Comunicación
+                        </button>
+                    </div>
+
+                    <!-- BOTONES DE EXPORTACIÓN -->
+                    <div class="flex flex-wrap items-center justify-end gap-2 mb-4">
+                        <button type="button" onclick="exportarVista('pdf')" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition cursor-pointer shadow-sm">
+                            📄 PDF
+                        </button>
+                        <button type="button" onclick="exportarVista('csv')" class="px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer shadow-sm">
+                            📑 CSV
+                        </button>
+                        <button type="button" onclick="exportarVista('xlsx')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition cursor-pointer shadow-sm">
+                            📊 .XLSX
+                        </button>
+                        <button type="button" onclick="exportarVista('xls')" class="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition cursor-pointer shadow-sm">
+                            📗 .XLS
+                        </button>
                     </div>
 
                     <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
@@ -387,14 +387,73 @@
         </div>
 
         <!-- FOOTER -->
-        <footer class="mt-12 py-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-center text-slate-500 dark:text-slate-400 text-xs font-medium transition-colors duration-300 rounded-2xl shadow-sm">
+        <footer class="max-w-7xl mx-auto w-full mt-12 py-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-center text-slate-500 dark:text-slate-400 text-xs font-medium transition-colors duration-300 rounded-2xl shadow-sm">
             <p>© {{ date('Y') }} I.E. Tungasuca - Sistema de Gestión Escolar. Todos los derechos reservados.</p>
         </footer>
 
     </div>
 
+    @include('partials.exporter-scripts')
+
     <!-- SCRIPTS -->
     <script>
+        function toggleOtroEquipoTic() {
+            const selectObjeto = document.getElementById('objeto');
+            const apartadoOtro = document.getElementById('apartadoOtroEquipoTic');
+            const inputNombre = document.getElementById('otro_nombre_equipo');
+            const campoGeneral = document.getElementById('campoEspecificacionesGenerales');
+
+            if (!selectObjeto || !apartadoOtro) return;
+
+            const esOtro = selectObjeto.value === 'Otro Equipo TIC';
+            apartadoOtro.classList.toggle('hidden', !esOtro);
+
+            if (campoGeneral) {
+                campoGeneral.classList.toggle('hidden', esOtro);
+            }
+
+            if (inputNombre) {
+                inputNombre.required = esOtro;
+                if (!esOtro) {
+                    inputNombre.value = '';
+                    const spec = document.getElementById('otro_especificaciones');
+                    const desc = document.getElementById('otro_descripcion');
+                    if (spec) spec.value = '';
+                    if (desc) desc.value = '';
+                }
+            }
+        }
+
+        const formTic = document.getElementById('formTic');
+        if (formTic) {
+            formTic.addEventListener('submit', function() {
+                const selectObjeto = document.getElementById('objeto');
+                if (!selectObjeto || selectObjeto.value !== 'Otro Equipo TIC') return;
+
+                const nombre = (document.getElementById('otro_nombre_equipo')?.value || '').trim();
+                const specs = (document.getElementById('otro_especificaciones')?.value || '').trim();
+                const desc = (document.getElementById('otro_descripcion')?.value || '').trim();
+                const detailsField = document.getElementById('details');
+
+                if (nombre) {
+                    const customOption = document.createElement('option');
+                    customOption.value = nombre;
+                    customOption.textContent = nombre;
+                    customOption.selected = true;
+                    selectObjeto.appendChild(customOption);
+                }
+
+                if (detailsField) {
+                    const partes = [];
+                    if (specs) partes.push(`Specs: ${specs}`);
+                    if (desc) partes.push(`Descripción: ${desc}`);
+                    if (partes.length > 0) {
+                        detailsField.value = partes.join(' | ');
+                    }
+                }
+            });
+        }
+
         // Ocultar Preloader
         window.addEventListener('load', () => {
             const preloader = document.getElementById('preloader');
@@ -402,6 +461,7 @@
                 preloader.classList.add('opacity-0');
                 setTimeout(() => preloader.remove(), 500);
             }
+            toggleOtroEquipoTic();
         });
 
         // Sincronizar el texto del botón al cargar
@@ -411,6 +471,7 @@
             if (themeLabel) {
                 themeLabel.innerText = currentTheme === 'dark' ? 'Oscuro' : 'Claro';
             }
+            toggleOtroEquipoTic();
         });
 
         // Cambio de tema local mediante navegador (localStorage)
@@ -429,22 +490,51 @@
             }
         }
 
-        // Buscador Filtro
+        // Filtro combinado: Aula TIC + Buscador
+        let selectedAula = '';
         const buscador = document.getElementById('buscador');
-        if (buscador) {
-            buscador.addEventListener('input', function() {
-                const query = this.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                const filas = document.querySelectorAll('.item-fila');
-                
-                filas.forEach(fila => {
-                    const texto = (fila.getAttribute('data-text') || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    if (texto.includes(query)) {
-                        fila.classList.remove('hidden');
-                    } else {
-                        fila.classList.add('hidden');
-                    }
-                });
+        const aulaBtns = document.querySelectorAll('.aula-filter-btn');
+
+        function normalizeText(str) {
+            return (str || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function aplicarFiltrosTIC() {
+            const query = normalizeText(buscador ? buscador.value : '');
+            const aulaQuery = normalizeText(selectedAula);
+            const filas = document.querySelectorAll('.item-fila');
+
+            filas.forEach(fila => {
+                const texto = normalizeText(fila.getAttribute('data-text'));
+                const matchAula = !aulaQuery || texto.includes(aulaQuery);
+                const matchSearch = !query || texto.includes(query);
+
+                if (matchAula && matchSearch) {
+                    fila.classList.remove('hidden');
+                } else {
+                    fila.classList.add('hidden');
+                }
             });
+        }
+
+        aulaBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                selectedAula = this.getAttribute('data-aula') || '';
+
+                aulaBtns.forEach(b => {
+                    b.classList.remove('bg-sky-600', 'text-white', 'shadow-sm');
+                    b.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+                });
+
+                this.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+                this.classList.add('bg-sky-600', 'text-white', 'shadow-sm');
+
+                aplicarFiltrosTIC();
+            });
+        });
+
+        if (buscador) {
+            buscador.addEventListener('input', aplicarFiltrosTIC);
         }
 
         // Cierre Alerta
@@ -454,6 +544,22 @@
                 alert.classList.add('opacity-0');
                 setTimeout(() => alert.remove(), 300);
             }
+        }
+
+        function exportarVista(formato) {
+            const sufijoAula = selectedAula
+                ? '_' + selectedAula.replace(/[^a-zA-Z0-9]+/g, '_')
+                : '';
+
+            const data = window.TungasucaExporter.extractFromTable('#tablaTIC', [4]);
+            window.TungasucaExporter.run(formato, {
+                title: selectedAula ? `Inventario TIC (${selectedAula})` : 'Inventario General de Aulas TIC',
+                subtitle: 'I.E. Tungasuca',
+                sheetName: 'Aulas_TIC',
+                filename: `Aulas_TIC${sufijoAula}_IE_Tungasuca`,
+                headers: data.headers,
+                rows: data.rows
+            });
         }
     </script>
 </body>

@@ -9,27 +9,58 @@ use App\Models\AipItem;
 use App\Models\Classroom;
 use App\Models\Grade;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // SEGURIDAD: Solo Administrador (1) puede ver el Dashboard general
+        $user = Auth::user();
+        if (!$user || (int) $user->rol_id !== 1) {
+            abort(403, 'No tienes autorización para acceder a este módulo.');
+        }
+
         $classroomId = $request->input('classroom_id');
+        $gradeFilter = $request->input('grade');
+        $sectionFilter = $request->input('section');
 
         // ==========================================
         // CONSULTAS MOBILIARIO
         // ==========================================
         $query = InventoryItem::query();
+
         if ($classroomId) {
             $query->where('classroom_id', $classroomId);
         }
 
-        $totalRegistros = (clone $query)->count();
-        $totalCantidad  = (clone $query)->sum('cantidad');
+        if ($gradeFilter || $sectionFilter) {
+            $query->whereHas('classroom', function ($q) use ($gradeFilter, $sectionFilter) {
+                if ($gradeFilter) {
+                    $q->where(function ($sub) use ($gradeFilter) {
+                        $sub->where('name', 'ILIKE', $gradeFilter . '°%')
+                            ->orWhere('name', 'ILIKE', $gradeFilter . ' %')
+                            ->orWhere('name', 'ILIKE', 'Grado ' . $gradeFilter . '%');
+                    });
+                }
+                if ($sectionFilter) {
+                    $sec = strtoupper(trim($sectionFilter));
+                    $q->where(function ($sub) use ($sec) {
+                        $sub->where('name', 'ILIKE', '% ' . $sec)
+                            ->orWhere('name', 'ILIKE', '%-' . $sec)
+                            ->orWhere('name', 'ILIKE', '%Sección ' . $sec);
+                    });
+                }
+            });
+        }
 
-        $cantBueno   = (clone $query)->where('condicion', 'Bueno')->sum('cantidad');
-        $cantRegular = (clone $query)->where('condicion', 'Regular')->sum('cantidad');
-        $cantMalo    = (clone $query)->where('condicion', 'Malo')->sum('cantidad');
+        $totalRegistros = (clone $query)->count();
+        $totalCantidad  = (int) (clone $query)->sum('cantidad');
+
+        $cantBueno   = (int) (clone $query)->whereRaw("LOWER(TRIM(condicion)) = 'bueno'")->sum('cantidad');
+        $cantRegular = (int) (clone $query)->whereRaw("LOWER(TRIM(condicion)) = 'regular'")->sum('cantidad');
+        $cantMalo    = (int) (clone $query)->whereRaw("LOWER(TRIM(condicion)) = 'malo'")->sum('cantidad');
 
         // ==========================================
         // TOP 10 DE OBJETOS POR CANTIDAD
@@ -37,9 +68,9 @@ class DashboardController extends Controller
         $topObjetos = (clone $query)
             ->select(
                 'objeto',
-                DB::raw("SUM(CASE WHEN condicion = 'Bueno' THEN cantidad ELSE 0 END) as buenas"),
-                DB::raw("SUM(CASE WHEN condicion = 'Regular' THEN cantidad ELSE 0 END) as regulares"),
-                DB::raw("SUM(CASE WHEN condicion = 'Malo' THEN cantidad ELSE 0 END) as malas"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'bueno' THEN cantidad ELSE 0 END) as buenas"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'regular' THEN cantidad ELSE 0 END) as regulares"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'malo' THEN cantidad ELSE 0 END) as malas"),
                 DB::raw('SUM(cantidad) as total')
             )
             ->groupBy('objeto')
@@ -47,25 +78,22 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        // Calcular "Otros"
-        $totalTop = $topObjetos->sum('total');
-        $totalOtros = $totalCantidad - $totalTop;
+        $totalTop   = (int) $topObjetos->sum('total');
+        $totalOtros = max(0, $totalCantidad - $totalTop);
 
-        // Construir arrays
         $nombresObjetos    = $topObjetos->pluck('objeto')->toArray();
-        $datosBueno        = $topObjetos->pluck('buenas')->toArray();
-        $datosRegular      = $topObjetos->pluck('regulares')->toArray();
-        $datosMalo         = $topObjetos->pluck('malas')->toArray();
-        $cantidadesObjetos = $topObjetos->pluck('total')->toArray();
+        $datosBueno        = $topObjetos->pluck('buenas')->map(fn($v) => (int) $v)->toArray();
+        $datosRegular      = $topObjetos->pluck('regulares')->map(fn($v) => (int) $v)->toArray();
+        $datosMalo         = $topObjetos->pluck('malas')->map(fn($v) => (int) $v)->toArray();
+        $cantidadesObjetos = $topObjetos->pluck('total')->map(fn($v) => (int) $v)->toArray();
 
-        // Agregar "Otros"
         if ($totalOtros > 0) {
             $statsOtros = (clone $query)
                 ->whereNotIn('objeto', $topObjetos->pluck('objeto'))
                 ->select(
-                    DB::raw("SUM(CASE WHEN condicion = 'Bueno' THEN cantidad ELSE 0 END) as buenas"),
-                    DB::raw("SUM(CASE WHEN condicion = 'Regular' THEN cantidad ELSE 0 END) as regulares"),
-                    DB::raw("SUM(CASE WHEN condicion = 'Malo' THEN cantidad ELSE 0 END) as malas")
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'bueno' THEN cantidad ELSE 0 END) as buenas"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'regular' THEN cantidad ELSE 0 END) as regulares"),
+                    DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'malo' THEN cantidad ELSE 0 END) as malas")
                 )
                 ->first();
 
@@ -79,20 +107,18 @@ class DashboardController extends Controller
         $matrizObjetos = $topObjetos;
 
         // ==========================================
-        // DETALLE POR AULA (con desglose por condición)
+        // DETALLE POR AULA
         // ==========================================
-        $detalleAula = InventoryItem::with('classroom')
+        $detalleAula = (clone $query)
+            ->with('classroom')
             ->select(
                 'classroom_id',
                 'objeto',
-                DB::raw("SUM(CASE WHEN condicion = 'Bueno' THEN cantidad ELSE 0 END) as buenas"),
-                DB::raw("SUM(CASE WHEN condicion = 'Regular' THEN cantidad ELSE 0 END) as regulares"),
-                DB::raw("SUM(CASE WHEN condicion = 'Malo' THEN cantidad ELSE 0 END) as malas"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'bueno' THEN cantidad ELSE 0 END) as buenas"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'regular' THEN cantidad ELSE 0 END) as regulares"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'malo' THEN cantidad ELSE 0 END) as malas"),
                 DB::raw('SUM(cantidad) as total')
             )
-            ->when($classroomId, function($q) use ($classroomId) {
-                return $q->where('classroom_id', $classroomId);
-            })
             ->groupBy('classroom_id', 'objeto')
             ->get()
             ->groupBy(function ($item) {
@@ -100,28 +126,29 @@ class DashboardController extends Controller
             })
             ->sortKeys(SORT_NATURAL);
 
-        // ==========================================
-        // FILTROS Y EXTRAS
-        // ==========================================
         $classroomsList = Classroom::orderBy('name')->get();
         $grades = Grade::with('classrooms')->get();
 
-        $totalBiblioteca = LibraryItem::sum('quantity');
-        $totalAIP = AipItem::count();
+        $libraryCol = Schema::hasColumn('library_items', 'cantidad') ? 'cantidad' : 'quantity';
+        $totalBiblioteca = (int) LibraryItem::sum($libraryCol);
+        $totalAIP = (int) AipItem::count();
 
-        return view('inventory.dashboard', compact(
+        return view('dashboard', compact(
             'totalRegistros', 'totalCantidad', 'cantBueno', 'cantRegular', 'cantMalo',
-            'matrizObjetos', 'detalleAula', 'classroomsList', 'classroomId', 'grades',
+            'matrizObjetos', 'detalleAula', 'classroomsList', 'classroomId',
+            'gradeFilter', 'sectionFilter', 'grades',
             'nombresObjetos', 'datosBueno', 'datosRegular', 'datosMalo', 'cantidadesObjetos',
             'totalBiblioteca', 'totalAIP'
         ));
     }
 
-    // ==========================================
-    // LISTADO COMPLETO DE OBJETOS
-    // ==========================================
     public function objetos(Request $request)
     {
+        $user = Auth::user();
+        if (!$user || (int) $user->rol_id !== 1) {
+            abort(403, 'No autorizado.');
+        }
+
         $classroomId = $request->input('classroom_id');
 
         $query = InventoryItem::query();
@@ -132,9 +159,9 @@ class DashboardController extends Controller
         $objetos = (clone $query)
             ->select(
                 'objeto',
-                DB::raw("SUM(CASE WHEN condicion = 'Bueno' THEN cantidad ELSE 0 END) as buenas"),
-                DB::raw("SUM(CASE WHEN condicion = 'Regular' THEN cantidad ELSE 0 END) as regulares"),
-                DB::raw("SUM(CASE WHEN condicion = 'Malo' THEN cantidad ELSE 0 END) as malas"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'bueno' THEN cantidad ELSE 0 END) as buenas"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'regular' THEN cantidad ELSE 0 END) as regulares"),
+                DB::raw("SUM(CASE WHEN LOWER(TRIM(condicion)) = 'malo' THEN cantidad ELSE 0 END) as malas"),
                 DB::raw('SUM(cantidad) as total')
             )
             ->groupBy('objeto')
@@ -143,10 +170,10 @@ class DashboardController extends Controller
 
         $classroomsList = Classroom::orderBy('name')->get();
 
-        $totalGeneral = $objetos->sum('total');
-        $totalBueno   = $objetos->sum('buenas');
-        $totalRegular = $objetos->sum('regulares');
-        $totalMalo    = $objetos->sum('malas');
+        $totalGeneral = (int) $objetos->sum('total');
+        $totalBueno   = (int) $objetos->sum('buenas');
+        $totalRegular = (int) $objetos->sum('regulares');
+        $totalMalo    = (int) $objetos->sum('malas');
 
         return view('inventory.objetos', compact(
             'objetos', 'classroomsList', 'classroomId',

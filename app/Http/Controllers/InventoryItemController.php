@@ -5,13 +5,33 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\InventoryItem;
 use App\Models\Grade;
-use App\Models\Classroom;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class InventoryItemController extends Controller
 {
+    private function authorizeInventoryAccess(string $errorMessage = 'No tienes autorización para acceder al módulo de Mobiliario.'): void
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403, $errorMessage);
+        }
+
+        if (method_exists($user, 'hasModulePermission') && $user->hasModulePermission('inventory')) {
+            return;
+        }
+
+        if ((int) $user->rol_id === 1 || (int) $user->rol_id === 3) {
+            return;
+        }
+
+        abort(403, $errorMessage);
+    }
+
     public function index()
     {
+        $this->authorizeInventoryAccess('No tienes autorización para acceder al módulo de Mobiliario.');
+
         $itemsPorAula = InventoryItem::with('classroom.grade')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -21,12 +41,14 @@ class InventoryItemController extends Controller
             ->sortKeys(SORT_NATURAL);
 
         $grades = Grade::with('classrooms')->get();
-        
+
         return view('inventory.index', compact('itemsPorAula', 'grades'));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeInventoryAccess('Acción no autorizada.');
+
         $request->validate([
             'classroom_id' => 'required|exists:classrooms,id',
             'objeto' => 'required|string|max:255',
@@ -41,13 +63,18 @@ class InventoryItemController extends Controller
 
     public function edit($id)
     {
+        $this->authorizeInventoryAccess('Acción no autorizada.');
+
         $item = InventoryItem::findOrFail($id);
         $grades = Grade::with('classrooms')->get();
+
         return view('inventory.edit', compact('item', 'grades'));
     }
 
     public function update(Request $request, $id)
     {
+        $this->authorizeInventoryAccess('Acción no autorizada.');
+
         $request->validate([
             'classroom_id' => 'required|exists:classrooms,id',
             'objeto' => 'required|string|max:255',
@@ -63,15 +90,11 @@ class InventoryItemController extends Controller
 
     public function destroy($id)
     {
+        $this->authorizeInventoryAccess('Acción no autorizada.');
+
         $item = InventoryItem::findOrFail($id);
         $item->delete();
 
         return redirect()->route('inventory.index')->with('success', 'Mobiliario eliminado correctamente.');
-    }
-
-    public function importCsv(Request $request)
-    {
-        // Tu lógica de importación CSV aquí (si la tienes)
-        return redirect()->route('inventory.index')->with('success', 'CSV importado.');
     }
 }

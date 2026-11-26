@@ -23,7 +23,7 @@
 
     <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col transition-colors overflow-hidden">
         <div class="mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
-            <h2 class="text-base font-bold text-brand-dark dark:text-white">Salud del Inventario</h2>
+            <h2 class="text-base font-bold text-brand-dark dark:text-white">Estado Operativo del Inventario</h2>
             <p class="text-xs text-slate-500 dark:text-slate-400">Distribución por condición</p>
         </div>
         <div class="relative w-full flex-1" style="min-height: 240px;">

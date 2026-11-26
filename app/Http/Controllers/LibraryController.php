@@ -8,68 +8,65 @@ use Illuminate\Support\Facades\Auth;
 
 class LibraryController extends Controller
 {
-    public function index()
+    private const ALLOWED_ROLES = [1, 2];
+
+    private function authorizeRole(): void
     {
-        // Validar que el usuario tenga rol de Administrador (1) o Biblioteca (2)
         $user = Auth::user();
-        if (!$user || ($user->rol_id != 1 && $user->rol_id != 2)) {
+
+        if (!$user) {
             abort(403, 'No tienes autorización para acceder a este módulo.');
         }
 
-        $items = LibraryItem::latest()->get()->map(function ($item) {
-            return (object) [
-                'id'              => $item->id,
-                'objeto'          => $item->title,
-                'barcode_serial'  => $item->isbn,
-                'brand_model'     => $item->author,
-                'cantidad'        => $item->quantity,
-                'condicion'       => $item->status,
-                'location'        => null,
-                'details'         => $item->observaciones,
-            ];
-        });
+        if (method_exists($user, 'hasModulePermission') && $user->hasModulePermission('library')) {
+            return;
+        }
+
+        $rolId = (int) ($user->rol_id ?? 0);
+        if (!in_array($rolId, self::ALLOWED_ROLES, true)) {
+            abort(403, 'No tienes autorización para acceder a este módulo.');
+        }
+    }
+
+    public function index()
+    {
+        $this->authorizeRole();
+
+        $items = LibraryItem::latest()->get();
 
         return view('library.index', compact('items'));
     }
 
     public function store(Request $request)
     {
-        $user = Auth::user();
-        if (!$user || ($user->rol_id != 1 && $user->rol_id != 2)) {
-            abort(403, 'No tienes autorización para realizar esta acción.');
-        }
+        $this->authorizeRole();
 
         $validated = $request->validate([
-            'objeto'          => 'required|string|max:255',
-            'brand_model'     => 'nullable|string|max:255',
-            'barcode_serial'  => 'nullable|string|max:255',
-            'cantidad'        => 'required|integer|min:1',
-            'condicion'       => 'required|string',
-            'details'         => 'nullable|string',
+            'identificador' => 'nullable|string|max:255',
+            'denominacion'  => 'required|string|max:255',
+            'coleccion'     => 'nullable|string|max:255',
+            'cantidad'      => 'required|integer|min:1',
+            'autor'         => 'nullable|string|max:255',
+            'editorial'     => 'nullable|string|max:255',
+            'anio_edicion'  => 'nullable|string|max:255',
+            'estado'        => 'required|string|in:Bueno,Regular,Malo',
+            'observaciones' => 'nullable|string|max:2000',
         ]);
 
-        LibraryItem::create([
-            'title'         => $validated['objeto'],
-            'author'        => $validated['brand_model'] ?? null,
-            'isbn'          => $validated['barcode_serial'] ?? null,
-            'quantity'      => $validated['cantidad'],
-            'status'        => $validated['condicion'],
-            'observaciones' => $validated['details'] ?? null,
-        ]);
+        $validated['title'] = $validated['denominacion'];
 
-        return redirect()->back()->with('success', '¡Material registrado correctamente!');
+        LibraryItem::create($validated);
+
+        return redirect()->back()->with('success', '¡Libro registrado correctamente!');
     }
 
     public function destroy($id)
     {
-        $user = Auth::user();
-        if (!$user || ($user->rol_id != 1 && $user->rol_id != 2)) {
-            abort(403, 'No tienes autorización para realizar esta acción.');
-        }
+        $this->authorizeRole();
 
         $item = LibraryItem::findOrFail($id);
         $item->delete();
 
-        return redirect()->back()->with('success', 'Material eliminado correctamente.');
+        return redirect()->back()->with('success', 'Libro eliminado correctamente.');
     }
 }

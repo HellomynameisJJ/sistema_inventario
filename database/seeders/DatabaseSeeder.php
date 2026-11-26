@@ -13,15 +13,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ==========================================
-        // 1. USUARIOS INSTITUCIONALES
+        // 1. USUARIOS INSTITUCIONALES (ACCESOS A MÓDULOS)
         // ==========================================
         User::updateOrCreate(
             ['dni' => '40000001'],
             [
                 'name' => 'Administrador I.E. Tungasuca',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('AdminTungasuca2026!'),
                 'role' => 'admin',
-                'permissions' => json_encode(['inventory', 'library', 'tic'])
+                'rol_id' => 1, // Administrador general (Acceso total)
+                'permissions' => json_encode(['inventory', 'library', 'tic', 'aip', 'laboratory'])
             ]
         );
 
@@ -29,9 +30,10 @@ class DatabaseSeeder extends Seeder
             ['dni' => '40000002'],
             [
                 'name' => 'Soporte Técnico',
-                'password' => Hash::make('soporte2026'),
+                'password' => Hash::make('SoporteTec#2026'),
                 'role' => 'directiva',
-                'permissions' => json_encode(['inventory', 'library', 'tic'])
+                'rol_id' => 1, // Acceso total tipo admin
+                'permissions' => json_encode(['inventory', 'library', 'tic', 'aip', 'laboratory'])
             ]
         );
 
@@ -39,8 +41,9 @@ class DatabaseSeeder extends Seeder
             ['dni' => '40000003'],
             [
                 'name' => 'Encargado de Biblioteca',
-                'password' => Hash::make('12345678'),
+                'password' => Hash::make('BiblioTungasuca#03'),
                 'role' => 'bibliotecario',
+                'rol_id' => 2, // Rol específico de Biblioteca
                 'permissions' => json_encode(['library'])
             ]
         );
@@ -48,10 +51,44 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(
             ['dni' => '40000004'],
             [
+                'name' => 'Encargado de Mobiliario',
+                'password' => Hash::make('MobiliarioAulas#04'),
+                'role' => 'mobiliario',
+                'rol_id' => 3, // Rol específico de Mobiliario / Aulas
+                'permissions' => json_encode(['inventory'])
+            ]
+        );
+
+        User::updateOrCreate(
+            ['dni' => '40000005'],
+            [
                 'name' => 'Encargado de Equipos TIC',
-                'password' => Hash::make('12345678'),
+                'password' => Hash::make('EquiposTic#05'),
                 'role' => 'tic',
+                'rol_id' => 4, // Rol específico de Equipos TIC
                 'permissions' => json_encode(['tic'])
+            ]
+        );
+
+        User::updateOrCreate(
+            ['dni' => '40000006'],
+            [
+                'name' => 'Encargado de Aula AIP',
+                'password' => Hash::make('AulaAip#06'),
+                'role' => 'aip',
+                'rol_id' => 5, // Rol específico de Aula AIP
+                'permissions' => json_encode(['aip'])
+            ]
+        );
+
+        User::updateOrCreate(
+            ['dni' => '40000007'],
+            [
+                'name' => 'Encargado de Laboratorio',
+                'password' => Hash::make('LabCiencias#07'),
+                'role' => 'laboratorio',
+                'rol_id' => 6, // Rol específico de Laboratorio de Ciencias
+                'permissions' => json_encode(['laboratory'])
             ]
         );
 
@@ -91,10 +128,9 @@ class DatabaseSeeder extends Seeder
         }
 
         // ==========================================
-        // 4. AULAS ESPECIALES (todas van al grado TIC o como libres)
+        // 4. AULAS ESPECIALES
         // ==========================================
         $aulasEspeciales = [
-            // AIPs
             'AIP',
             'AULA DE INGLES',
             'AULA DE INNOVACIÓN PEDAGOGICA',
@@ -103,16 +139,12 @@ class DatabaseSeeder extends Seeder
             'AULA TIC-EPT',
             'AULA TIC-INGLES',
             'AULA DE COMPUTO',
-            
-            // Áreas académicas
             'AREA DE CIENCIAS SOCIALES',
             'AREA DE COMUNICACION',
             'EPT',
             'TALLER DE MATEMATICA',
             'LABORATORIO CTA',
             'LABORATORIO',
-            
-            // Oficinas
             'DIRECCIÓN',
             'SUBDIRECCION',
             'SECRETARIA',
@@ -122,12 +154,8 @@ class DatabaseSeeder extends Seeder
             'PSICOLOGIA',
             'TUTORIA',
             'AULA TOE',
-            
-            // Depósitos
             'ALMACÉN',
             'DEPOSITO',
-            
-            // Áreas comunes
             'PATIO',
             'PATIO CENTRAL',
             'PATIO GENERAL',

@@ -11,19 +11,27 @@ class CheckModuleAccess
     {
         $user = auth()->user();
 
-        // Si es Admin General o Directiva, dar acceso total por defecto
-        if (in_array($user->role, ['admin', 'directiva'])) {
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        if (method_exists($user, 'hasModulePermission') && $user->hasModulePermission((string) $module)) {
             return $next($request);
         }
 
-        // Decodificar permisos del usuario
-        $permissions = json_decode($user->permissions ?? '[]', true);
+        $roleByModule = [
+            'library'    => 2,
+            'inventory'  => 3,
+            'tic'        => 4,
+            'aip'        => 5,
+            'laboratory' => 6,
+        ];
 
-        // Verificar si tiene acceso al módulo solicitado ('inventory', 'library', 'tic')
-        if (in_array($module, $permissions)) {
+        $rolId = (int) ($user->rol_id ?? 0);
+        if ($rolId === 1 || (isset($roleByModule[$module]) && $rolId === $roleByModule[$module])) {
             return $next($request);
         }
 
-        return redirect()->route('inventory.dashboard')->with('error', 'No cuentas con autorización para acceder a este módulo institucional.');
+        abort(403, 'No tienes autorización para acceder al módulo de ' . strtoupper((string) $module) . '.');
     }
 }

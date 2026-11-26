@@ -1,24 +1,54 @@
 <div class="bg-white dark:bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm transition-colors">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
             <h2 class="text-lg font-bold text-brand-dark dark:text-white tracking-wide">Detalle Estructural por Aula</h2>
             <p class="text-xs text-slate-500 dark:text-slate-400">Listado jerárquico de mobiliario y recursos asignados</p>
         </div>
-        
-        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <div class="relative flex-grow sm:flex-grow-0 sm:w-64">
-                <input type="text" id="buscadorTabla" onkeyup="filtrarTabla()" placeholder="Buscar aula u objeto..." aria-label="Buscar en la tabla" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-brand-dark dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition">
+
+        <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto">
+            <!-- COMBOBOX GRADO (1° a 5°) -->
+            <select id="filtroGrado" onchange="onChangeGrado()" aria-label="Filtrar por grado"
+                class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-brand-dark dark:text-slate-100 font-semibold focus:outline-none focus:border-brand-blue transition cursor-pointer">
+                <option value="">Todos los grados</option>
+                <option value="1">1° Grado</option>
+                <option value="2">2° Grado</option>
+                <option value="3">3° Grado</option>
+                <option value="4">4° Grado</option>
+                <option value="5">5° Grado</option>
+            </select>
+
+            <!-- COMBOBOX SECCIÓN (A hasta la última letra disponible) -->
+            <select id="filtroSeccion" onchange="filtrarTabla()" aria-label="Filtrar por sección"
+                class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-brand-dark dark:text-slate-100 font-semibold focus:outline-none focus:border-brand-blue transition cursor-pointer">
+                <option value="">Todas las secciones</option>
+            </select>
+
+            <!-- BUSCADOR -->
+            <div class="relative flex-grow sm:flex-grow-0 sm:w-56">
+                <input type="text" id="buscadorTabla" onkeyup="filtrarTabla()" placeholder="Buscar aula u objeto..." aria-label="Buscar en la tabla"
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-brand-dark dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition">
                 <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
             </div>
 
-            <button type="button" onclick="exportarPDF()" class="bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white border border-rose-200 dark:border-rose-900 px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 transition text-xs shadow-sm cursor-pointer">
+            <!-- BOTONES DE EXPORTACIÓN -->
+            <button type="button" onclick="exportarPDF()" class="bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white border border-rose-200 dark:border-rose-900 px-3.5 py-2.5 rounded-xl font-bold flex items-center gap-1.5 transition text-xs shadow-sm cursor-pointer">
                 <span>📄</span>
-                <span>Exportar PDF</span>
+                <span>PDF</span>
             </button>
 
-            <button type="button" onclick="exportarCSV()" class="bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-600 text-emerald-600 dark:text-emerald-400 hover:text-white border border-emerald-200 dark:border-emerald-900 px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 transition text-xs shadow-sm cursor-pointer">
+            <button type="button" onclick="exportarCSV()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-white border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 rounded-xl font-bold flex items-center gap-1.5 transition text-xs shadow-sm cursor-pointer">
+                <span>📑</span>
+                <span>CSV</span>
+            </button>
+
+            <button type="button" onclick="exportarExcel('xlsx')" class="bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-600 text-emerald-700 dark:text-emerald-400 hover:text-white border border-emerald-200 dark:border-emerald-900 px-3.5 py-2.5 rounded-xl font-bold flex items-center gap-1.5 transition text-xs shadow-sm cursor-pointer">
                 <span>📊</span>
-                <span>Exportar CSV</span>
+                <span>.XLSX</span>
+            </button>
+
+            <button type="button" onclick="exportarExcel('xls')" class="bg-teal-50 dark:bg-teal-950/40 hover:bg-teal-600 text-teal-700 dark:text-teal-400 hover:text-white border border-teal-200 dark:border-teal-900 px-3.5 py-2.5 rounded-xl font-bold flex items-center gap-1.5 transition text-xs shadow-sm cursor-pointer">
+                <span>📗</span>
+                <span>.XLS</span>
             </button>
         </div>
     </div>
