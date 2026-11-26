@@ -109,13 +109,112 @@
                     </div>
                 </div>
 
-                <div class="z-30">
+                <!-- ACCIONES A LA DERECHA -->
+                <div class="z-30 flex flex-wrap items-center gap-3">
+                    <button
+                        type="button"
+                        id="btnToggleNuevoUsuario"
+                        onclick="toggleNuevoUsuarioBox()"
+                        class="bg-brand-yellow hover:bg-amber-300 text-brand-dark px-5 py-2.5 rounded-2xl font-extrabold flex items-center gap-2 transition-all shadow-md text-sm whitespace-nowrap cursor-pointer"
+                    >
+                        <span>➕</span>
+                        <span>Agregar nuevo usuario</span>
+                    </button>
+
                     <a href="{{ route('inventory.dashboard') }}" class="bg-brand-hover hover:bg-white hover:text-brand-blue dark:bg-slate-700 dark:hover:bg-slate-600 dark:hover:text-white text-white border border-white/20 px-5 py-2.5 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-md text-sm whitespace-nowrap">
                         <span>📊</span>
                         <span>Ir al Dashboard</span>
                     </a>
                 </div>
             </header>
+
+            <!-- PANEL DESPLEGABLE: AGREGAR NUEVO USUARIO -->
+            <div id="boxNuevoUsuario" class="{{ $errors->any() ? '' : 'hidden' }} bg-white dark:bg-slate-900 p-6 md:p-7 rounded-3xl border border-brand-blue/30 dark:border-brand-sky/30 shadow-lg mb-8 transition-all">
+                <div class="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div>
+                        <h2 class="text-lg font-extrabold text-brand-dark dark:text-white">Agregar nuevo usuario</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Complete Nombre, Rol, DNI y Contraseña (si la dejas vacía, se usará el DNI como contraseña inicial).</p>
+                    </div>
+                    <button type="button" onclick="toggleNuevoUsuarioBox()" class="text-slate-400 hover:text-rose-500 font-bold text-xl px-2 cursor-pointer">&times;</button>
+                </div>
+
+                <form action="{{ route('profiles.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                    @csrf
+
+                    <div>
+                        <label for="nuevo_nombre" class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+                            Nombre
+                        </label>
+                        <input
+                            type="text"
+                            id="nuevo_nombre"
+                            name="name"
+                            value="{{ old('name') }}"
+                            required
+                            placeholder="Ej: María Pérez"
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-brand-dark dark:text-white focus:outline-none focus:border-brand-blue"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="nuevo_rol" class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+                            Rol
+                        </label>
+                        <select
+                            id="nuevo_rol"
+                            name="rol_id"
+                            required
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-sky-600 dark:text-sky-400 focus:outline-none focus:border-brand-blue cursor-pointer"
+                        >
+                            <option value="2" {{ (string) old('rol_id') === '2' ? 'selected' : '' }}>Encargado de Biblioteca</option>
+                            <option value="3" {{ (string) old('rol_id') === '3' ? 'selected' : '' }}>Encargado de Mobiliario</option>
+                            <option value="4" {{ (string) old('rol_id') === '4' ? 'selected' : '' }}>Encargado de Equipos TIC</option>
+                            <option value="5" {{ (string) old('rol_id') === '5' ? 'selected' : '' }}>Encargado de Aula AIP</option>
+                            <option value="6" {{ (string) old('rol_id') === '6' ? 'selected' : '' }}>Encargado de Laboratorio</option>
+                            <option value="1" {{ (string) old('rol_id') === '1' ? 'selected' : '' }}>Administrador / Directiva</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="nuevo_dni" class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+                            DNI
+                        </label>
+                        <input
+                            type="text"
+                            id="nuevo_dni"
+                            name="dni"
+                            value="{{ old('dni') }}"
+                            required
+                            maxlength="15"
+                            placeholder="Ej: 71234567"
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono text-brand-dark dark:text-white focus:outline-none focus:border-brand-blue"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="nueva_password" class="block text-xs font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-2">
+                            Contraseña
+                        </label>
+                        <input
+                            type="password"
+                            id="nueva_password"
+                            name="password"
+                            placeholder="Mín. 6 caracteres (opcional)"
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-brand-dark dark:text-white focus:outline-none focus:border-brand-blue"
+                        >
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            class="w-full bg-brand-blue hover:bg-brand-hover text-white font-extrabold py-3 px-4 rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                            <span>✅</span>
+                            <span>Crear y Asignar Módulo</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
 
             <!-- NOTIFICACIÓN DE ÉXITO -->
             @if(session('success'))
@@ -125,11 +224,23 @@
                 </div>
             @endif
 
+            <!-- ERRORES DE VALIDACIÓN -->
+            @if($errors->any())
+                <div class="bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 px-5 py-4 rounded-2xl mb-6 shadow-sm">
+                    <div class="font-bold text-sm mb-1">⚠️ Revisa los datos ingresados:</div>
+                    <ul class="list-disc pl-6 text-xs space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- TABLA DE GESTIÓN DE PERFILES -->
             <div class="bg-white dark:bg-slate-900 p-6 md:p-7 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm transition-colors">
                 <div class="mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                     <h2 class="text-lg font-bold text-brand-dark dark:text-white tracking-wide">Personal Institucional y Permisos</h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Asigne el rol principal y active o desactive los módulos permitidos para cada usuario.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Asigne el rol principal, active o desactive los módulos permitidos o elimine usuarios.</p>
                 </div>
 
                 <div class="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800">
@@ -139,7 +250,7 @@
                                 <th class="py-4 px-5">Usuario / DNI</th>
                                 <th class="py-4 px-5">Rol del Sistema</th>
                                 <th class="py-4 px-5">Módulos Autorizados (Permisos)</th>
-                                <th class="py-4 px-5 text-center">Acción</th>
+                                <th class="py-4 px-5 text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-brand-dark dark:text-slate-200 text-sm">
@@ -190,9 +301,21 @@
                                         </div>
                                     </td>
                                     <td class="py-4 px-5 text-center">
-                                        <button type="submit" form="{{ $formId }}" class="bg-brand-blue hover:bg-brand-hover text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap">
-                                            💾 Guardar Accesos
-                                        </button>
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button type="submit" form="{{ $formId }}" class="bg-brand-blue hover:bg-brand-hover text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap">
+                                                💾 Guardar Accesos
+                                            </button>
+
+                                            @if((int) auth()->id() !== (int) $u->id)
+                                                <form action="{{ route('profiles.destroy', $u->id) }}" method="POST" onsubmit="return confirm('¿Desea eliminar al usuario {{ addslashes($u->name) }} (DNI: {{ $u->dni }})?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white border border-rose-200 dark:border-rose-900 px-3.5 py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap">
+                                                        🗑️ Eliminar usuario
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -209,8 +332,17 @@
         </footer>
     </div>
 
-    <!-- SCRIPT DE TEMA CON LOCALSTORAGE -->
+    <!-- SCRIPT DE TEMA Y FORMULARIO DE NUEVO USUARIO -->
     <script>
+        function toggleNuevoUsuarioBox() {
+            const box = document.getElementById('boxNuevoUsuario');
+            if (!box) return;
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                document.getElementById('nuevo_nombre')?.focus();
+            }
+        }
+
         function getSavedTheme() {
             try {
                 return localStorage.getItem('theme') || 'light';

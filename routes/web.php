@@ -114,9 +114,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('profiles')->name('profiles.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
+        Route::post('/', [ProfileController::class, 'store'])->name('store');
         Route::get('/{id}/edit', [ProfileController::class, 'edit'])->name('edit');
         Route::put('/{id}', [ProfileController::class, 'update'])->name('update');
         Route::put('/{id}/access', [ProfileController::class, 'updateAccess'])->name('update-access');
+        Route::delete('/{id}', [ProfileController::class, 'destroy'])->name('destroy');
     });
 
 });
